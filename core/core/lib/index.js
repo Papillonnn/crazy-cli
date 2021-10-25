@@ -8,8 +8,10 @@ const semver = require('semver');
 const colors = require('colors/safe');
 const userHome = require('user-home');
 const pathExists = require('path-exists').sync;
+const { program } = require('commander');
 const pkg = require('../package.json');
 const log = require('@crazy-cli/log');
+const init = require('@crazy-cli/init');
 const { LOWEST_NODE_VERSION, DEFAULT_CLI_HOME } = require('./const');
 
 let args, config;
@@ -20,9 +22,10 @@ async function core() {
         checkNodeVersion();
         checkRoot();
         checkUserHome();
-        checkInputArgs();
+        // checkInputArgs();
         checkEnv();
-        await checkGlobalUpdate();
+        // await checkGlobalUpdate();
+        registerCommand();
     } catch (e) {
         log.error(e.message);
     }
@@ -101,5 +104,43 @@ async function checkGlobalUpdate() {
     const latestVersion = await getNpmSemverVersion(currentVersion, npmName);
     if(latestVersion && semver.gt(latestVersion, currentVersion)) {
         log.warn(colors.yellow(`请手动更新至最新版本 ${latestVersion}，当前版本 ${currentVersion}，更新命令：npm install -g ${npmName}`));
+    }
+}
+
+function registerCommand() {
+    program
+        .name(Object.keys(pkg.bin)[0])
+        .usage('<command> [options]')
+        .version(pkg.version)
+        .option('-d, --debug', '是否开启调试模式', false)
+
+    program
+        .command('init [projectName]')
+        .option('-f, --force', '是否强制初始化项目')
+        .action(init)
+
+    program.on('option:debug', function() {
+        if(program.opts().debug) {
+            process.env.LOG_LEVEL = 'verbose';
+        } else {
+            process.env.LOG_LEVEL = 'info';
+        }
+        log.level = process.env.LOG_LEVEL;
+        log.verbose('debug mode');
+    })
+
+    // listen for unknown commands
+    program.on('command:*', function(cmdObj) {
+        const availableCommands = program.commands.map(command => command.name());
+        console.log(colors.red(`未知的命令：${cmdObj[0]}`));
+        if(availableCommands.length > 0) {
+            console.log(colors.red(`可用命令：${availableCommands.join(',')}`));
+        }
+    })
+
+    program.parse(process.argv);
+
+    if(program.args && !program.args.length) {
+        program.outputHelp();
     }
 }
