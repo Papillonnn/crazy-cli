@@ -12,23 +12,27 @@ const { program } = require('commander');
 const pkg = require('../package.json');
 const log = require('@crazy-cli/log');
 const init = require('@crazy-cli/init');
+const exec = require('@crazy-cli/exec');
 const { LOWEST_NODE_VERSION, DEFAULT_CLI_HOME } = require('./const');
 
-let args, config;
+let config;
 
 async function core() {
     try {
-        checkPkgVersion();
-        checkNodeVersion();
-        checkRoot();
-        checkUserHome();
-        // checkInputArgs();
-        checkEnv();
-        // await checkGlobalUpdate();
+        await prepare();
         registerCommand();
     } catch (e) {
         log.error(e.message);
     }
+}
+
+async function prepare() {
+    checkPkgVersion();
+    checkNodeVersion();
+    checkRoot();
+    checkUserHome();
+    checkEnv();
+    // await checkGlobalUpdate();
 }
 
 function checkPkgVersion() {
@@ -56,21 +60,6 @@ function checkUserHome() {
     }
 }
 
-function checkInputArgs() {
-    const minimist = require('minimist');
-    args = minimist(process.argv.slice(2));
-    checkArgs();
-}
-
-function checkArgs() {
-    if(args.debug) {
-        process.env.LOG_LEVEL = 'verbose';
-    } else {
-        process.env.LOG_LEVEL = 'info';
-    }
-    log.level = process.env.LOG_LEVEL;
-}
-
 function checkEnv() {
     const dotenv = require('dotenv');
     const dotenvPath = path.resolve(userHome, '.env');
@@ -78,7 +67,6 @@ function checkEnv() {
         config = dotenv.config({ path: dotenvPath });
     }
     createDefaultConfig();
-    log.verbose('env', process.env.CLI_HOME_PATH);
 }
 
 function createDefaultConfig() {
@@ -113,11 +101,12 @@ function registerCommand() {
         .usage('<command> [options]')
         .version(pkg.version)
         .option('-d, --debug', '是否开启调试模式', false)
+        .option('-tp, --targetPath <targetPath>', '是否指定本地调试文件路径', '')
 
     program
         .command('init [projectName]')
         .option('-f, --force', '是否强制初始化项目')
-        .action(init)
+        .action(exec)
 
     program.on('option:debug', function() {
         if(program.opts().debug) {
@@ -127,6 +116,11 @@ function registerCommand() {
         }
         log.level = process.env.LOG_LEVEL;
         log.verbose('debug mode');
+    })
+
+    // add targetPath to env
+    program.on('option:targetPath', function() {
+        process.env.CLI_TARGET_PATH = program.opts().targetPath;
     })
 
     // listen for unknown commands

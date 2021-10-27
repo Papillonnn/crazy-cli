@@ -1,0 +1,33 @@
+{
+  "name": "@crazy-cli/exec",
+  "version": "1.0.0",
+  "description": "crazy-cli exec",
+  "author": "Papillonnn <1401577609@qq.com>",
+  "homepage": "https://github.com/Papillonnn/crazy-cli#readme",
+  "license": "ISC",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "registry": "http://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Papillonnn/crazy-cli.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/Papillonnn/crazy-cli/issues"
+  },
+  "dependencies": {
+    "@crazy-cli/package": "file:../../models/package",
+    "@crazy-cli/log": "file:../../utils/log"
+  }
+}

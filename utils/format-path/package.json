@@ -1,9 +1,9 @@
 {
-  "name": "@crazy-cli/utils",
+  "name": "@crazy-cli/format-path",
   "version": "1.0.0",
-  "description": "crazy-cli utils",
+  "description": "format path",
   "author": "Papillonnn <1401577609@qq.com>",
-  "homepage": "",
+  "homepage": "https://github.com/Papillonnn/crazy-cli#readme",
   "license": "ISC",
   "main": "lib/index.js",
   "directories": {
@@ -16,7 +16,14 @@
   "publishConfig": {
     "registry": "http://registry.npmjs.org/"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Papillonnn/crazy-cli.git"
+  },
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/Papillonnn/crazy-cli/issues"
   }
 }
