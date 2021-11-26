@@ -11,9 +11,8 @@ const pathExists = require('path-exists').sync;
 const { program } = require('commander');
 const pkg = require('../package.json');
 const log = require('@crazy-cli/log');
-const init = require('@crazy-cli/init');
 const exec = require('@crazy-cli/exec');
-const { LOWEST_NODE_VERSION, DEFAULT_CLI_HOME } = require('./const');
+const { DEFAULT_CLI_HOME } = require('./const');
 
 let config;
 
@@ -28,7 +27,6 @@ async function core() {
 
 async function prepare() {
     checkPkgVersion();
-    checkNodeVersion();
     checkRoot();
     checkUserHome();
     checkEnv();
@@ -37,15 +35,6 @@ async function prepare() {
 
 function checkPkgVersion() {
     log.notice('cli', pkg.version);
-}
-
-function checkNodeVersion() {
-    // get current node version
-    const currentVersion = process.version;
-    // compare current version with lowest version
-    if(!semver.gte(currentVersion, LOWEST_NODE_VERSION)) {
-        throw new Error(colors.red('当前node版本过低，请升级至 v' + LOWEST_NODE_VERSION));
-    }
 }
 
 // Try to downgrade the permissions of a process with root privileges and block access if it fails

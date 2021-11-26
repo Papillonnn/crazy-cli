@@ -26,7 +26,7 @@ class Command {
             chain = chain.then(() => this.exec());
             chain.catch(err => {
                 log.error(err.message);
-            })  
+            });
         });
     }
 

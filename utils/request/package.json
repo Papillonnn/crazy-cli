@@ -1,7 +1,7 @@
 {
-  "name": "@crazy-cli/init",
+  "name": "@crazy-cli/request",
   "version": "1.0.0",
-  "description": "crazy-cli init",
+  "description": "crazy-cli request",
   "author": "Papillonnn <1401577609@qq.com>",
   "homepage": "https://github.com/Papillonnn/crazy-cli#readme",
   "license": "ISC",
@@ -14,7 +14,7 @@
     "lib"
   ],
   "publishConfig": {
-    "registry": "http://registry.npmjs.org/"
+    "access": "public"
   },
   "repository": {
     "type": "git",
@@ -27,14 +27,6 @@
     "url": "https://github.com/Papillonnn/crazy-cli/issues"
   },
   "dependencies": {
-    "@crazy-cli/command": "file:../../models/command",
-    "@crazy-cli/log": "file:../../utils/log",
-    "@crazy-cli/package": "file:../../models/package",
-    "@crazy-cli/request": "file:../../utils/request",
-    "@crazy-cli/utils": "file:../../utils/utils",
-    "fs-extra": "^10.0.0",
-    "inquirer": "^8.2.0",
-    "semver": "^7.3.5",
-    "user-home": "^3.0.0"
+    "axios": "^0.24.0"
   }
 }
