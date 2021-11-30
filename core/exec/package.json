@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@crazy-cli/package": "file:../../models/package",
-    "@crazy-cli/log": "file:../../utils/log"
+    "@crazy-cli/log": "file:../../utils/log",
+    "@crazy-cli/utils": "file:../../utils/utils"
   }
 }

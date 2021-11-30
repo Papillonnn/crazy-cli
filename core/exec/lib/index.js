@@ -1,9 +1,9 @@
 'use strict';
 
 const path = require('path');
-const cp = require('child_process');
 const Package = require('@crazy-cli/package');
 const log = require('@crazy-cli/log');
+const { exec: spawn } = require('@crazy-cli/utils');
 
 const SETTINGS = {
     init: '@imooc-cli/init',
@@ -82,15 +82,6 @@ async function exec() {
             log.error(e.message);
         }
     }
-}
-
-// 兼容windows
-function spawn(command, args, options) {
-    const win32 = process.platform === 'win32';
-
-    const cmd = win32 ? 'cmd' : command;
-    const cmdArgs = win32 ? ['/c'].concat(command, args) : args;
-    return cp.spawn(cmd, cmdArgs,  options || {});
 }
 
 module.exports = exec;
