@@ -3,6 +3,8 @@
 const path = require('path');
 const fs = require('fs');
 const fse = require('fs-extra');
+const ejs = require('ejs');
+const glob = require('glob');
 const semver = require('semver');
 const userHome = require('user-home');
 const inquirer = require('inquirer');
@@ -33,6 +35,7 @@ class InitCommand extends Command {
         try {
             await this.prepare();
             if(this.projectInfo) {
+                log.verbose('projectInfo', this.projectInfo);
                 // 下载模板
                 await this.downloadTemplate();
                 // 安装模板
@@ -124,7 +127,7 @@ class InitCommand extends Command {
                 }
             }, {
                 type: 'input',
-                name: 'projectVersion',
+                name: 'version',
                 message: '请输入项目版本号',
                 default: '1.0.0',
                 validate: function(v) {
@@ -158,7 +161,7 @@ class InitCommand extends Command {
         }
         // 生成className
         if(projectInfo.projectName) {
-            projectInfo.className = require('kebab-case')(projectInfo.projectName);
+            projectInfo.className = require('kebab-case')(projectInfo.projectName).replace(/^-/, '');
         }
         this.projectInfo = projectInfo;
         // 2.获取项目的基本信息
@@ -256,6 +259,9 @@ class InitCommand extends Command {
             spinner.stop(true);
             log.success('模板安装成功！');
         }
+        // ejs模板渲染
+        const ignore = ['node_modules/**', 'public/**'];
+        await this.ejsRender({ ignore });
         // 依赖安装
         const { installCommand, startCommand } = this.templateInfo;
         const installRes = await this.execCommand(installCommand);
@@ -264,6 +270,44 @@ class InitCommand extends Command {
         }
         // 启动命令执行
         await this.execCommand(startCommand);
+    }
+
+    async installCustomTemplate() {
+        console.log('安装自定义模板');
+    }
+
+    async ejsRender(options) {
+        const dir = process.cwd();
+        const projectInfo = this.projectInfo;
+        return new Promise((resolve, reject) => {
+            glob('**', {
+                cwd: dir,
+                ignore: options.ignore || '',
+                nodir: true,
+            }, (err, files) => {
+                if(err) {
+                    reject(err);
+                }
+                console.log(files);
+                Promise.all(files.map(file => {
+                    const filePath = path.join(dir, file);
+                    return new Promise((resolve1, reject1) => {
+                        ejs.renderFile(filePath, projectInfo, (err, result) => {
+                            if(err) {
+                                reject1(err);
+                            } else {
+                                fse.writeFileSync(filePath, result);
+                                resolve1(result);
+                            }
+                        })
+                    })
+                })).then(() => {
+                    resolve();
+                }).catch(err => {
+                    reject(err);
+                })
+            })
+        })
     }
 
     async execCommand(command) {
@@ -278,10 +322,6 @@ class InitCommand extends Command {
             })
         }
         return res;
-    }
-
-    async installCustomTemplate() {
-        console.log('安装自定义模板');
     }
 
     checkCommand(cmd) {
